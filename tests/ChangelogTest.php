@@ -12,4 +12,11 @@ namespace ComposerVersioner;
 
 class ChangelogTest extends TestCase
 {
+    public function testCanCheckIfHasRelease()
+    {
+        $changelog = new Changelog(__DIR__.'/../CHANGELOG.md');
+
+        $this->assertTrue($changelog->hasRelease('0.1.0'));
+        $this->assertFalse($changelog->hasRelease('9.9.9'));
+    }
 }

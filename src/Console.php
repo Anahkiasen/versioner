@@ -13,6 +13,9 @@ namespace ComposerVersioner;
 use ComposerVersioner\Commands\CreateVersionCommand;
 use Symfony\Component\Console\Application;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Console extends Application
 {
     /**

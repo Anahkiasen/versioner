@@ -1,4 +1,7 @@
-# composer
+# Dependencies
 vendor
 composer.lock
+
+# Tests
 phpunit.xml
+tests/_coverage

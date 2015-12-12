@@ -30,6 +30,10 @@ class ChangelogConverterTest extends TestCase
                 ],
             ],
             [
+                'name' => '0.2.1',
+                'date' => '2015-01-01',
+            ],
+            [
                 'name' => '0.2.0',
                 'date' => '2015-01-01',
                 'changes' => [
