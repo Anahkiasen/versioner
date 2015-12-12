@@ -4,7 +4,7 @@
 
 ### Added
 
-- Initial `release`
+- Initial `releases`
 
 ## 0.1.0 - 2015-01-01
 

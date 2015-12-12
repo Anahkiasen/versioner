@@ -1,12 +1,11 @@
 <?php
 namespace ComposerVersioner;
 
-use Changelog\Parser;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\Process;
 
 class Versioner
 {
@@ -28,16 +27,17 @@ class Versioner
     /**
      * Versioner constructor.
      *
-     * @param string                     $rootPath
+     * @param string               $rootPath
      * @param string               $version
      * @param OutputInterface|null $output
      */
     public function __construct($rootPath, $version, OutputInterface $output = null)
     {
         $this->rootPath = $rootPath;
-        $this->version = $version;
-        $this->output  = $output ?: new NullOutput();
+        $this->version  = $version;
+        $this->output   = $output ?: new NullOutput();
 
+        // Wrap in SymfonyStyle
         if (!$this->output instanceof SymfonyStyle) {
             $this->output = new SymfonyStyle(new ArrayInput([]), $this->output);
         }
@@ -51,28 +51,46 @@ class Versioner
         $this->output->title('Creating version '.$this->version);
 
         $this->updateChangelog();
-        $this->pushTags();
+        //$this->pushTags();
     }
 
     /**
-     * @return Parser
+     * @return Changelog
      */
     protected function updateChangelog()
     {
         $changelogPath = $this->rootPath.'/CHANGELOG.md';
 
         $changelog = $this->parseChangelog($changelogPath);
-        $versions  = $changelog->getReleases();
-        $exists    = array_filter($versions, function ($release) {
-            return $release['name'] === $this->version;
-        });
+        if (!$changelog->hasRelease($this->version)) {
 
-        if (!$exists) {
-            $versions[] = [
+            // Add changes
+            $changes = [];
+            foreach ($changelog->getSections() as $section) {
+                $changes[$section] = [];
+
+                $question = new Question('Add something to "' .$section. '"?');
+                $question->setValidator(function ($value) {
+                    return $value ?: 'NOPE';
+                });
+
+                while ($change = $this->output->askQuestion($question)) {
+                    if ($change === 'NOPE') {
+                        break;
+                    }
+
+                    $changes[$section][] = $change;
+                }
+            }
+
+            $changelog->addRelease([
                 'name' => $this->version,
                 'date' => date('Y-m-d'),
-            ];
+                'changes' => $changes,
+            ]);
         }
+
+        $changelog->save();
 
         return $changelog;
     }
@@ -89,26 +107,22 @@ class Versioner
         ];
 
         foreach ($commands as $command) {
-            (new Process($command))->run();
+            //(new Process($command))->run();
         }
     }
 
     /**
      * @param string $changelogPath
      *
-     * @return Parser
+     * @return Changelog
      */
     protected function parseChangelog($changelogPath)
     {
         // Get all versions from CHANGELOG
-        if (!file_exists($changelogPath) && $this->output->ask('No CHANGELOG.md file found, create one?')) {
+        if (!file_exists($changelogPath)) {
             file_put_contents($changelogPath, '# CHANGELOG');
         }
 
-        // Parse changelog
-        $changelog = file_get_contents($changelogPath);
-        $parser    = new Parser($changelog);
-
-        return $parser;
+        return new Changelog($changelogPath);
     }
 }

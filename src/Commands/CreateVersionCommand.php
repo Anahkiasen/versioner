@@ -41,10 +41,10 @@ class CreateVersionCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $rootPath = getcwd();
-        $version  = $this->input->getArgument('version');
+        $version  = $input->getArgument('version');
         $output   = new SymfonyStyle($input, $output);
 
-        $this->output->title('Creating version '.$version);
+        $output->title('Creating version '.$version);
         $versioner = new Versioner($rootPath, $version, $output);
         $versioner->createVersion();
     }
