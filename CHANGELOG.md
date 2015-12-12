@@ -1,4 +1,11 @@
-# Changelog
+# CHANGELOG
 
-#### vMAJOR.MINOR.PATCH `2015-12-12`
-- First release.
+## 0.2.0 - 2015-01-01
+
+### Added
+- Initial `release`
+
+## 0.1.0 - 2015-01-01
+
+### Added
+- Initial `release`

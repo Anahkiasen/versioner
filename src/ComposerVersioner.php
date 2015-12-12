@@ -2,7 +2,7 @@
 
 namespace ComposerVersioner;
 
-use ComposerVersioner\Commands\VersionCommand;
+use ComposerVersioner\Commands\CreateVersionCommand;
 use Symfony\Component\Console\Application;
 
 class ComposerVersioner extends Application
@@ -20,7 +20,7 @@ class ComposerVersioner extends Application
         parent::__construct('Composer Versioner', self::VERSION);
 
         $this->addCommands([
-           new VersionCommand(),
+           new CreateVersionCommand(),
         ]);
     }
 }
