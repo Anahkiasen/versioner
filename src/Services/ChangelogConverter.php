@@ -1,7 +1,7 @@
 <?php
 
 /*
- * This file is part of Glue
+ * This file is part of anahkiasen/composer-versioner
  *
  * (c) madewithlove <heroes@madewithlove.be>
  *
