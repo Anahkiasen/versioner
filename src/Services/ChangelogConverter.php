@@ -1,10 +1,19 @@
 <?php
+
+/*
+ * This file is part of Glue
+ *
+ * (c) madewithlove <heroes@madewithlove.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ */
+
 namespace ComposerVersioner\Services;
 
 use League\HTMLToMarkdown\HtmlConverter;
 
 /**
- * Converts an array of releases to a Markdown CHANGELOG
+ * Converts an array of releases to a Markdown CHANGELOG.
  */
 class ChangelogConverter
 {
@@ -24,7 +33,7 @@ class ChangelogConverter
      */
     public function __construct(array $releases, $description = null)
     {
-        $this->releases    = $releases;
+        $this->releases = $releases;
         $this->description = $description;
     }
 

@@ -1,9 +1,17 @@
 <?php
+
+/*
+ * This file is part of Glue
+ *
+ * (c) madewithlove <heroes@madewithlove.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ */
+
 namespace ComposerVersioner\Services;
 
 use ComposerVersioner\TestCase;
 use Mockery;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 class VersionerTest extends TestCase
@@ -15,7 +23,7 @@ class VersionerTest extends TestCase
         $output = Mockery::mock(SymfonyStyle::class);
         $output->shouldReceive('ask')->andReturn(false);
         $output->shouldReceive('askQuestion')->andReturnUsing(function () use (&$count) {
-            $count++;
+            ++$count;
 
             return ($count < 5 && $count % 2) ? 'foobar' : false;
         });

@@ -1,4 +1,13 @@
 <?php
+
+/*
+ * This file is part of Glue
+ *
+ * (c) madewithlove <heroes@madewithlove.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ */
+
 namespace ComposerVersioner\Services;
 
 use ComposerVersioner\Changelog;
@@ -35,8 +44,8 @@ class Versioner
     public function __construct($rootPath, $version, OutputInterface $output = null)
     {
         $this->rootPath = $rootPath;
-        $this->version  = $version;
-        $this->output   = $output ?: new NullOutput();
+        $this->version = $version;
+        $this->output = $output ?: new NullOutput();
 
         // Wrap in SymfonyStyle
         if (!$this->output instanceof SymfonyStyle) {
@@ -85,8 +94,8 @@ class Versioner
             }
 
             $changelog->addRelease([
-                'name'    => $this->version,
-                'date'    => date('Y-m-d'),
+                'name' => $this->version,
+                'date' => date('Y-m-d'),
                 'changes' => $changes,
             ]);
         }
@@ -97,7 +106,7 @@ class Versioner
     }
 
     /**
-     * Push the tags to Git
+     * Push the tags to Git.
      */
     protected function pushTags()
     {

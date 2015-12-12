@@ -1,4 +1,13 @@
 <?php
+
+/*
+ * This file is part of Glue
+ *
+ * (c) madewithlove <heroes@madewithlove.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ */
+
 namespace ComposerVersioner\Services;
 
 use ComposerVersioner\TestCase;
@@ -9,10 +18,10 @@ class ChangelogConverterTest extends TestCase
     {
         $changelog = [
             [
-                'name'    => '1.1.1',
-                'date'    => '2015-12-12',
+                'name' => '1.1.1',
+                'date' => '2015-12-12',
                 'changes' => [
-                    'added'    => [
+                    'added' => [
                         'aa',
                     ],
                     'security' => [
@@ -21,8 +30,8 @@ class ChangelogConverterTest extends TestCase
                 ],
             ],
             [
-                'name'    => '0.2.0',
-                'date'    => '2015-01-01',
+                'name' => '0.2.0',
+                'date' => '2015-01-01',
                 'changes' => [
                     'added' => [
                         'Initial <code>release</code>',
@@ -30,8 +39,8 @@ class ChangelogConverterTest extends TestCase
                 ],
             ],
             [
-                'name'    => '0.1.0',
-                'date'    => '2015-01-01',
+                'name' => '0.1.0',
+                'date' => '2015-01-01',
                 'changes' => [
                     'added' => [
                         'Initial <code>release</code>',

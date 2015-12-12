@@ -1,4 +1,13 @@
 <?php
+
+/*
+ * This file is part of Glue
+ *
+ * (c) madewithlove <heroes@madewithlove.be>
+ *
+ * For the full copyright and license information, please view the LICENSE
+ */
+
 namespace ComposerVersioner\Commands;
 
 use ComposerVersioner\Services\Versioner;
@@ -41,8 +50,8 @@ class CreateVersionCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $rootPath = getcwd();
-        $version  = $input->getArgument('version');
-        $output   = new SymfonyStyle($input, $output);
+        $version = $input->getArgument('version');
+        $output = new SymfonyStyle($input, $output);
 
         $output->title('Creating version '.$version);
         $versioner = new Versioner($rootPath, $version, $output);
