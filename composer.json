@@ -17,17 +17,18 @@
         "league/html-to-markdown": "^4.1"
     },
     "require-dev": {
+        "mockery/mockery": "^0.9.4",
         "phpunit/phpunit": "^5.1",
         "symfony/var-dumper": "^3.0"
     },
     "autoload": {
         "psr-4": {
-            "ComposerVersioner\\": "src/"
+            "ComposerVersioner\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ComposerVersioner\\Tests\\": "tests/"
+            "ComposerVersioner\\": "tests"
         }
     },
     "minimum-stability": "stable",

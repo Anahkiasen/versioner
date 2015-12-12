@@ -1,6 +1,7 @@
 <?php
-namespace ComposerVersioner;
+namespace ComposerVersioner\Services;
 
+use ComposerVersioner\Changelog;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -69,7 +70,7 @@ class Versioner
             foreach ($changelog->getSections() as $section) {
                 $changes[$section] = [];
 
-                $question = new Question('Add something to "' .$section. '"?');
+                $question = new Question('Add something to "'.$section.'"?');
                 $question->setValidator(function ($value) {
                     return $value ?: 'NOPE';
                 });
@@ -84,8 +85,8 @@ class Versioner
             }
 
             $changelog->addRelease([
-                'name' => $this->version,
-                'date' => date('Y-m-d'),
+                'name'    => $this->version,
+                'date'    => date('Y-m-d'),
                 'changes' => $changes,
             ]);
         }
@@ -119,8 +120,8 @@ class Versioner
     protected function parseChangelog($changelogPath)
     {
         // Get all versions from CHANGELOG
-        if (!file_exists($changelogPath)) {
-            file_put_contents($changelogPath, '# CHANGELOG');
+        if (!file_exists($changelogPath) && !$this->output->ask('No CHANGELOG.md exists, create it?')) {
+            file_put_contents($changelogPath, '# CHANGELOG'.PHP_EOL.'This is your CHANGELOG');
         }
 
         return new Changelog($changelogPath);

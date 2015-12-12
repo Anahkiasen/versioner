@@ -1,7 +1,7 @@
 <?php
 namespace ComposerVersioner\Commands;
 
-use ComposerVersioner\Versioner;
+use ComposerVersioner\Services\Versioner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

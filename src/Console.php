@@ -20,7 +20,7 @@ class Console extends Application
         parent::__construct('Composer Versioner', self::VERSION);
 
         $this->addCommands([
-           new CreateVersionCommand(),
+            new CreateVersionCommand(),
         ]);
     }
 }

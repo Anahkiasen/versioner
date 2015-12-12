@@ -1,9 +1,13 @@
 <?php
 namespace ComposerVersioner;
 
-use League\HTMLToMarkdown\HtmlConverter;
+use Changelog\Parser;
+use ComposerVersioner\Services\ChangelogConverter;
 
-class Changelog extends \Changelog\Parser
+/**
+ * An object representation of a CHANGELOG
+ */
+class Changelog extends Parser
 {
     /**
      * @var string
@@ -53,7 +57,7 @@ class Changelog extends \Changelog\Parser
      */
     public function addRelease(array $release)
     {
-        $this->releases[] = $release;
+        array_unshift($this->releases, $release);
     }
 
     /**
@@ -64,29 +68,9 @@ class Changelog extends \Changelog\Parser
      */
     public function save()
     {
-        $html      = '# CHANGELOG';
-        $converter = new HtmlConverter();
-        foreach ($this->releases as $release) {
-            if (!array_key_exists('changes', $release)) {
-                continue;
-            }
+        $converter = new ChangelogConverter($this->releases, $this->getDescription());
+        $markdown  = $converter->getMarkdown();
 
-            $html .= PHP_EOL.PHP_EOL;
-            $html .= '## ' .$release['name'].' - '.$release['date'];
-            $html .= PHP_EOL.PHP_EOL;
-
-            foreach ($release['changes'] as $section => $changes) {
-                $html .= '### '.ucfirst($section);
-                $html .= PHP_EOL.PHP_EOL;
-
-                foreach ($changes as $change) {
-                    $html .= '- '.$converter->convert($change);
-                }
-            }
-        }
-
-        file_put_contents($this->file, $html);
-
-        return $html;
+        file_put_contents($this->file, $markdown);
     }
 }
