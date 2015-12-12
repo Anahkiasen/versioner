@@ -11,11 +11,15 @@
 namespace ComposerVersioner\Services;
 
 use ComposerVersioner\Changelog;
+use Symfony\Component\Console\Helper\DebugFormatterHelper;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Helper\ProcessHelper;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\ProcessBuilder;
 
 class Versioner
 {
@@ -44,8 +48,8 @@ class Versioner
     public function __construct($rootPath, $version, OutputInterface $output = null)
     {
         $this->rootPath = $rootPath;
-        $this->version  = $version;
-        $this->output   = $output ?: new NullOutput();
+        $this->version = $version;
+        $this->output = $output ?: new NullOutput();
 
         // Wrap in SymfonyStyle
         if (!$this->output instanceof SymfonyStyle) {
@@ -54,15 +58,13 @@ class Versioner
     }
 
     /**
-     * {@inheritdoc}
+     * Create the package version.
      */
     public function createVersion()
     {
         $this->output->title('Creating version '.$this->version);
 
         if (!$this->updateChangelog()) {
-            $this->output->error('Canceled');
-
             return;
         }
 
@@ -76,7 +78,7 @@ class Versioner
     protected function updateChangelog()
     {
         $changelogPath = $this->rootPath.'/CHANGELOG.md';
-        $question      = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
+        $question = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
 
         $changelog = $this->parseChangelog($changelogPath);
         if ($changelog->hasRelease($this->version) && !$this->output->confirm($question, false)) {
@@ -86,12 +88,12 @@ class Versioner
         // Add changes
         $changes = $this->gatherChanges($changelog);
         if (!$changes) {
-            $this->output->error('No changes to create version with');
+            return $this->output->error('No changes to create version with');
         }
 
         $changelog->addRelease([
-            'name'    => $this->version,
-            'date'    => date('Y-m-d'),
+            'name' => $this->version,
+            'date' => date('Y-m-d'),
             'changes' => $changes,
         ]);
 
@@ -101,7 +103,7 @@ class Versioner
     }
 
     /**
-     * Update the VERSION constant in the codebase
+     * Update the VERSION constant in the codebase.
      */
     protected function updateCodebase()
     {
@@ -112,14 +114,24 @@ class Versioner
      */
     protected function pushTags()
     {
+        if (!$this->output->confirm('Push to remote?')) {
+            return;
+        }
+
         $commands = [
             'git commit -m "Create version '.$this->version.'"',
             'git push',
             'git push --tags',
         ];
 
+        $helper = new ProcessHelper();
+        $helper->setHelperSet(new HelperSet([
+            'debug_formatter' => new DebugFormatterHelper(),
+        ]));
+
         foreach ($commands as $command) {
-            //(new Process($command))->run();
+            $process = ProcessBuilder::create($command)->getProcess();
+            $helper->run($this->output, $process);
         }
     }
 
@@ -151,19 +163,25 @@ class Versioner
     {
         $changes = [];
         foreach ($changelog->getSections() as $section) {
-            $changes[$section] = [];
+            $sectionChanges = [];
 
+            // Prepare question
             $question = new Question('Add something to "'.ucfirst($section).'"?');
             $question->setValidator(function ($value) {
                 return $value ?: 'NOPE';
             });
 
+            // Gather changes from user
             while ($change = $this->output->askQuestion($question)) {
                 if ($change === 'NOPE') {
                     break;
                 }
 
-                $changes[$section][] = $change;
+                $sectionChanges = $change;
+            }
+
+            if ($sectionChanges) {
+                $changes[$section] = $sectionChanges;
             }
         }
 

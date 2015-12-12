@@ -50,6 +50,19 @@ class Changelog extends Parser
     }
 
     /**
+     * @return string|void
+     */
+    public function getDescription()
+    {
+        $description = parent::getDescription();
+        if (strpos($description, '## ')) {
+            return;
+        }
+
+        return $description;
+    }
+
+    /**
      * @param string $expected
      *
      * @return bool
