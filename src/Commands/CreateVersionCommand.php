@@ -56,7 +56,6 @@ class CreateVersionCommand extends Command
         $version = $input->getArgument('version');
         $output = new SymfonyStyle($input, $output);
 
-        $output->title('Creating version '.$version);
         $versioner = new Versioner($rootPath, $version, $output);
         $versioner->createVersion();
     }

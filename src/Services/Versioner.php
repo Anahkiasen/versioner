@@ -44,8 +44,8 @@ class Versioner
     public function __construct($rootPath, $version, OutputInterface $output = null)
     {
         $this->rootPath = $rootPath;
-        $this->version = $version;
-        $this->output = $output ?: new NullOutput();
+        $this->version  = $version;
+        $this->output   = $output ?: new NullOutput();
 
         // Wrap in SymfonyStyle
         if (!$this->output instanceof SymfonyStyle) {
@@ -60,7 +60,13 @@ class Versioner
     {
         $this->output->title('Creating version '.$this->version);
 
-        $this->updateChangelog();
+        if (!$this->updateChangelog()) {
+            $this->output->error('Canceled');
+
+            return;
+        }
+
+        $this->updateCodebase();
         //$this->pushTags();
     }
 
@@ -70,39 +76,35 @@ class Versioner
     protected function updateChangelog()
     {
         $changelogPath = $this->rootPath.'/CHANGELOG.md';
+        $question      = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
 
         $changelog = $this->parseChangelog($changelogPath);
-        if (!$changelog->hasRelease($this->version)) {
-
-            // Add changes
-            $changes = [];
-            foreach ($changelog->getSections() as $section) {
-                $changes[$section] = [];
-
-                $question = new Question('Add something to "'.$section.'"?');
-                $question->setValidator(function ($value) {
-                    return $value ?: 'NOPE';
-                });
-
-                while ($change = $this->output->askQuestion($question)) {
-                    if ($change === 'NOPE') {
-                        break;
-                    }
-
-                    $changes[$section][] = $change;
-                }
-            }
-
-            $changelog->addRelease([
-                'name' => $this->version,
-                'date' => date('Y-m-d'),
-                'changes' => $changes,
-            ]);
+        if ($changelog->hasRelease($this->version) && !$this->output->confirm($question, false)) {
+            return;
         }
+
+        // Add changes
+        $changes = $this->gatherChanges($changelog);
+        if (!$changes) {
+            $this->output->error('No changes to create version with');
+        }
+
+        $changelog->addRelease([
+            'name'    => $this->version,
+            'date'    => date('Y-m-d'),
+            'changes' => $changes,
+        ]);
 
         $changelog->save();
 
         return $changelog;
+    }
+
+    /**
+     * Update the VERSION constant in the codebase
+     */
+    protected function updateCodebase()
+    {
     }
 
     /**
@@ -121,6 +123,10 @@ class Versioner
         }
     }
 
+    //////////////////////////////////////////////////////////////////////
+    ////////////////////////////// HELPERS ///////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
     /**
      * @param string $changelogPath
      *
@@ -134,5 +140,33 @@ class Versioner
         }
 
         return new Changelog($changelogPath);
+    }
+
+    /**
+     * @param Changelog $changelog
+     *
+     * @return array
+     */
+    protected function gatherChanges(Changelog $changelog)
+    {
+        $changes = [];
+        foreach ($changelog->getSections() as $section) {
+            $changes[$section] = [];
+
+            $question = new Question('Add something to "'.ucfirst($section).'"?');
+            $question->setValidator(function ($value) {
+                return $value ?: 'NOPE';
+            });
+
+            while ($change = $this->output->askQuestion($question)) {
+                if ($change === 'NOPE') {
+                    break;
+                }
+
+                $changes[$section][] = $change;
+            }
+        }
+
+        return $changes;
     }
 }
