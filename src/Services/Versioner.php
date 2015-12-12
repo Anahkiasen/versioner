@@ -69,7 +69,9 @@ class Versioner
         }
 
         $this->updateCodebase();
-        //$this->pushTags();
+        $this->pushTags();
+
+        $this->output->success('Version '.$this->version. ' created');
     }
 
     /**
