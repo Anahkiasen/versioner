@@ -55,7 +55,7 @@ class Changelog extends Parser
     public function getDescription()
     {
         $description = parent::getDescription();
-        if (strpos($description, '## ')) {
+        if (strpos($description, '## ') !== false) {
             return;
         }
 

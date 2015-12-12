@@ -180,7 +180,7 @@ class Versioner
                     break;
                 }
 
-                $sectionChanges = $change;
+                $sectionChanges[] = $change;
             }
 
             if ($sectionChanges) {
