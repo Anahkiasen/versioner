@@ -1,8 +1,8 @@
 #!/usr/bin/env php
 <?php
-use ComposerVersioner\ComposerVersioner;
+use ComposerVersioner\Console;
 
 require __DIR__.'/../vendor/autoload.php';
 
-$console = new ComposerVersioner();
+$console = new Console();
 $console->run();

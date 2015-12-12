@@ -1,4 +1,4 @@
-# ComposerVersioner
+# Console
 
 A package to more easily version packages.
 

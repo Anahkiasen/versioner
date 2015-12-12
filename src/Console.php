@@ -5,7 +5,7 @@ namespace ComposerVersioner;
 use ComposerVersioner\Commands\CreateVersionCommand;
 use Symfony\Component\Console\Application;
 
-class ComposerVersioner extends Application
+class Console extends Application
 {
     /**
      * @var string

@@ -10,7 +10,7 @@
          stopOnFailure="true"
          syntaxCheck="false">
     <testsuites>
-        <testsuite name="ComposerVersioner Suite">
+        <testsuite name="Console Suite">
             <directory>tests/</directory>
         </testsuite>
     </testsuites>
