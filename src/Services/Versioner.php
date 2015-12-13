@@ -18,7 +18,6 @@ use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
-use Symfony\Component\Process\ProcessBuilder;
 use Versioner\Changelog;
 
 class Versioner
@@ -80,9 +79,10 @@ class Versioner
     protected function updateChangelog()
     {
         $changelogPath = $this->rootPath.'/CHANGELOG.md';
-        $question = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
 
+        // If the release already exists and we don't want to overwrite it, cancel
         $changelog = $this->parseChangelog($changelogPath);
+        $question = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
         if ($changelog->hasRelease($this->version) && !$this->output->confirm($question, false)) {
             return;
         }
@@ -90,31 +90,34 @@ class Versioner
         // Summarize commits
         $last = $changelog->getLastRelease();
         if ($last) {
-            $commits = $this->execute(['git', 'log', $last['name'].'..HEAD', '--oneline']);
+            $commits = $this->executeQuietly(['git', 'log', $last['name'].'..HEAD', '--oneline']);
             $commits = explode(PHP_EOL, trim($commits));
             $this->output->writeln('Commits since <comment>'.$last['name'].'</comment>:');
             $this->output->listing($commits);
         }
 
-        // Add changes
+        // Gather changes for new version
         $this->output->section('Gathering changes for <comment>'.$this->version.'</comment>');
         $changes = $this->gatherChanges($changelog);
         if (!$changes) {
             return $this->output->error('No changes to create version with');
         }
 
+        // Add to changelog
         $changelog->addRelease([
             'name' => $this->version,
             'date' => date('Y-m-d'),
             'changes' => $changes,
         ]);
 
+        // Show to user and confirm
         $preview = $changelog->toMarkdown();
         $this->output->note($preview);
         if (!$this->output->confirm('This is your new CHANGELOG.md, all good?')) {
             return;
         }
 
+        // Write out to CHANGELOG.md
         $changelog->save();
 
         return $changelog;
@@ -125,12 +128,12 @@ class Versioner
      */
     protected function pushTags()
     {
-        if (!$this->output->confirm('Push to remote?')) {
+        if (!$this->output->confirm('Tag and push to remote?')) {
             return;
         }
 
         $commands = [
-            ['git', 'commit', '-m "Create version '.$this->version.'"'],
+            ['git', 'commit', '-m' => '"Create version '.$this->version.'"'],
             ['git', 'tag', $this->version],
             ['git', 'push'],
             ['git', 'push', '--tags'],
@@ -146,6 +149,8 @@ class Versioner
     //////////////////////////////////////////////////////////////////////
 
     /**
+     * Parse a CHANGELOG.md into an object.
+     *
      * @param string $changelogPath
      *
      * @return Changelog
@@ -161,6 +166,8 @@ class Versioner
     }
 
     /**
+     * Gather changes for the new version.
+     *
      * @param Changelog $changelog
      *
      * @return array
@@ -196,16 +203,31 @@ class Versioner
 
     /**
      * @param string $command
+     *
+     * @return string
      */
-    protected function execute($command)
+    protected function executeQuietly($command)
+    {
+        return $this->execute($command, false);
+    }
+
+    /**
+     * Execute a bash command.
+     *
+     * @param string $command
+     * @param bool   $showOutput
+     *
+     * @return string
+     */
+    protected function execute($command, $showOutput = true)
     {
         $helper = new ProcessHelper();
         $helper->setHelperSet(new HelperSet([
             'debug_formatter' => new DebugFormatterHelper(),
         ]));
 
-        $process = ProcessBuilder::create($command)->getProcess();
-        $helper->run($this->output, $process);
+        $verbosity = $showOutput ? OutputInterface::VERBOSITY_QUIET : OutputInterface::VERBOSITY_DEBUG;
+        $process = $helper->run($this->output, $command, null, null, $verbosity);
 
         return $process->getOutput();
     }
