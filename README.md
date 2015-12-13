@@ -60,7 +60,7 @@ If you discover any security related issues, please email heroes@madewithlove.be
 
 The MIT License (MIT). Please see [License File](LICENSE.md) for more information.
 
-[ico-version]: https://img.shields.io/packagist/v/Anahkiasen/versioner.svg?style=flat-square
+[ico-version]: https://img.shields.io/packagist/v/anahkiasen/versioner.svg?style=flat-square
 [ico-license]: https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square
 [ico-travis]: https://img.shields.io/travis/Anahkiasen/versioner/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/Anahkiasen/versioner.svg?style=flat-square
