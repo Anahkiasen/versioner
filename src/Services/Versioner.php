@@ -149,7 +149,7 @@ class Versioner
 
         $commands = [
             ['git', 'add', '--all'],
-            ['git', 'commit', '-vam', '"Create version '.$this->version.'"'],
+            ['git', 'commit', '-vam', 'Create version '.$this->version],
             ['git', 'tag', $this->version],
             ['git', 'push'],
             ['git', 'push', '--tags'],
