@@ -7,7 +7,7 @@
 [![Quality Score][ico-code-quality]][link-code-quality]
 [![Total Downloads][ico-downloads]][link-downloads]
 
-A package to more easily version packages.
+Versioner is a package to more easily version and update changes to Semver compliant packages.
 
 ## Installation
 
