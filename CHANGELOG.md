@@ -10,5 +10,5 @@ This project follows the [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- Fixed \*\*nasty\*\* bug
+- Fixed **nasty bug**
 - Fixed other nasty bug
