@@ -63,11 +63,12 @@ abstract class AbstractCommand extends Command
      */
     protected function getChangelog()
     {
+        $changelogPath = $this->environment->getChangelogPath();
         if (!$this->environment->hasChangelog() && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
             $stub = file_get_contents(__DIR__.'/../../stubs/CHANGELOG.md');
-            file_put_contents($this->environment->getChangelogPath(), $stub);
+            file_put_contents($changelogPath, $stub);
         }
 
-        return new Changelog($this->environment->getChangelogPath());
+        return new Changelog($changelogPath);
     }
 }

@@ -61,7 +61,7 @@ class ChangelogConverterTest extends TestCase
 
 **lol**
 
-## 1.1.1 - 2015-12-12
+## [1.1.1] - 2015-12-12
 
 ### Added
 
@@ -71,17 +71,20 @@ class ChangelogConverterTest extends TestCase
 
 - a
 
-## 0.2.0 - 2015-01-01
+## [0.2.0] - 2015-01-01
 
 ### Added
 
 - Initial `release`
 
-## 0.1.0 - 2015-01-01
+## [0.1.0] - 2015-01-01
 
 ### Added
 
 - Initial `release`
+
+[1.1.1]: https://github.com/anahkiasen/versioner/compare/0.2.0...1.1.1
+[0.2.0]: https://github.com/anahkiasen/versioner/compare/0.1.0...0.2.0
 MARKDOWN;
 
         $this->assertEquals($expected, $markdown);
@@ -107,7 +110,7 @@ MARKDOWN;
         $expected = <<<'MARKDOWN'
 # CHANGELOG
 
-## 0.1.0 - 2015-01-01
+## [0.1.0] - 2015-01-01
 
 ### Added
 

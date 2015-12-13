@@ -30,8 +30,6 @@ class Changelog extends Parser
     protected $releases = [];
 
     /**
-     * Changelog constructor.
-     *
      * @param string $file
      */
     public function __construct($file)

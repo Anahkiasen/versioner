@@ -26,7 +26,7 @@ class VersionerTest extends TestCase
         $this->assertChangelogEquals(<<<'MARKDOWN'
 # CHANGELOG
 
-## 1.0.0 - {date}
+## [1.0.0] - {date}
 
 ### Added
 
@@ -65,7 +65,7 @@ MARKDOWN;
 
 Description
 
-## 1.0.0 - {date}
+## [1.0.0] - {date}
 
 ### Added
 
@@ -92,7 +92,7 @@ MARKDOWN
         $this->assertChangelogEquals(<<<'MARKDOWN'
 # CHANGELOG
 
-## 1.0.0 - {date}
+## [1.0.0] - {date}
 
 ### Added
 

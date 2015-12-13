@@ -49,15 +49,30 @@ class ChangelogConverter
             $html .= (new HtmlConverter())->convert($this->description);
         }
 
-        foreach ($this->releases as $release) {
-            if (!array_key_exists('changes', $release)) {
-                continue;
-            }
+        $releases = array_values(array_filter($this->releases, function ($release) {
+           return array_key_exists('changes', $release);
+        }));
 
+        // Append releases
+        foreach ($releases as $release) {
             $html .= $this->convertRelease($release);
         }
 
-        return $html;
+        // Append links to changes
+        $html .= PHP_EOL.PHP_EOL;
+        foreach ($releases as $key => $release) {
+            if (!array_key_exists($key + 1, $releases)) {
+                break;
+            }
+
+            $current = $release['name'];
+            $previous = $releases[$key + 1]['name'];
+
+            $html .= sprintf('[%s]: https://github.com/anahkiasen/versioner/compare/%s...%s', $current, $previous, $current);
+            $html .= PHP_EOL;
+        }
+
+        return trim($html);
     }
 
     /**
@@ -69,7 +84,7 @@ class ChangelogConverter
     {
         $html = '';
         $html .= PHP_EOL.PHP_EOL;
-        $html .= '## '.$release['name'].' - '.$release['date'];
+        $html .= '## ['.$release['name'].'] - '.$release['date'];
 
         foreach ($release['changes'] as $section => $changes) {
             if (!$changes) {
