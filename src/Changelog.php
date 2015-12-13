@@ -55,7 +55,7 @@ class Changelog extends Parser
     public function getDescription()
     {
         $description = parent::getDescription();
-        if (preg_match('/\d\.\d\.\d/', $description)) {
+        if ($this->releases && strpos($description, $this->releases[0]['name']) !== false) {
             return;
         }
 
