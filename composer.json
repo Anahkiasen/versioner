@@ -12,9 +12,10 @@
     "require": {
         "php": ">=5.6.0",
         "bramdevries/changelog": "^0.7.0",
+        "illuminate/support": "^5.1",
+        "league/html-to-markdown": "^4.1",
         "symfony/console": "^3.0",
-        "symfony/process": "^3.0",
-        "league/html-to-markdown": "^4.1"
+        "symfony/process": "^3.0"
     },
     "require-dev": {
         "fabpot/php-cs-fixer": "2.0.x@dev",
@@ -32,8 +33,10 @@
             "Versioner\\": "tests"
         }
     },
+    "bin": ["bin/versioner"],
     "minimum-stability": "stable",
     "scripts": {
-        "test": "phpunit"
+        "test": "phpunit",
+        "lint": "php-cs-fixer fix"
     }
 }

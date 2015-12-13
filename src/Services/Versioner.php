@@ -64,12 +64,12 @@ class Versioner
     {
         $this->output->title('Creating version '.$this->version);
 
-        if (!$this->updateChangelog()) {
-            return;
+        $steps = ['updateChangelog', 'pushTags'];
+        foreach ($steps as $step) {
+            if (!$this->$step()) {
+                return;
+            }
         }
-
-        $this->updateCodebase();
-        $this->pushTags();
 
         $this->output->success('Version '.$this->version.' created');
     }
@@ -108,13 +108,6 @@ class Versioner
         $changelog->save();
 
         return $changelog;
-    }
-
-    /**
-     * Update the VERSION constant in the codebase.
-     */
-    protected function updateCodebase()
-    {
     }
 
     /**

@@ -22,6 +22,8 @@ class VersionerTest extends TestCase
 
         $output = Mockery::mock(SymfonyStyle::class);
         $output->shouldReceive('ask')->andReturn(false);
+        $output->shouldReceive('confirm')->with('This is your new CHANGELOG.md, all good?')->andReturn(true);
+        $output->shouldReceive('confirm')->with('Push to remote?')->andReturn(false);
         $output->shouldReceive('askQuestion')->andReturnUsing(function () use (&$count) {
             ++$count;
 
@@ -37,7 +39,7 @@ class VersionerTest extends TestCase
 
 This is your CHANGELOG
 
-## 1.0.0 - 2015-12-12
+## 1.0.0 - {date}
 
 ### Added
 
@@ -48,6 +50,7 @@ This is your CHANGELOG
 - foobar
 MARKDOWN;
 
+        $expected = str_replace('{date}', date('Y-m-d'), $expected);
         $this->assertEquals($expected, file_get_contents(__DIR__.'/CHANGELOG.md'));
     }
 }
