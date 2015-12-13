@@ -10,8 +10,17 @@ $ composer global require anahkiasen/versioner
 
 ## Usage
 
+Use the `create` command to create a new version:
+
 ```bash
-$ composer-versioner create 1.2.3
+$ versioner create 1.2.3
+```
+
+Or use the `increment` command (default is patch):
+
+```bash
+$ versioner increment
+$ versioner increment [--major|--minor|--patch]
 ```
 
 ![](http://i.imgur.com/uOLWRUG.gif)
