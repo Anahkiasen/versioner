@@ -13,6 +13,9 @@ namespace Versioner\Commands;
 use Symfony\Component\Console\Input\InputOption;
 use Versioner\Services\Versioner;
 
+/**
+ * @codeCoverageIgnore
+ */
 class IncrementCommand extends AbstractCommand
 {
     /**
