@@ -65,7 +65,7 @@ The MIT License (MIT). Please see [License File](LICENSE.md) for more informatio
 [ico-travis]: https://img.shields.io/travis/Anahkiasen/versioner/master.svg?style=flat-square
 [ico-scrutinizer]: https://img.shields.io/scrutinizer/coverage/g/Anahkiasen/versioner.svg?style=flat-square
 [ico-code-quality]: https://img.shields.io/scrutinizer/g/Anahkiasen/versioner.svg?style=flat-square
-[ico-downloads]: https://img.shields.io/packagist/dt/Anahkiasen/versioner.svg?style=flat-square
+[ico-downloads]: https://img.shields.io/packagist/dt/anahkiasen/versioner.svg?style=flat-square
 
 [link-packagist]: https://packagist.org/packages/Anahkiasen/versioner
 [link-travis]: https://travis-ci.org/Anahkiasen/versioner
