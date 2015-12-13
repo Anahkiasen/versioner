@@ -1,5 +1,5 @@
 {
-    "name": "anahkiasen/composer-versioner",
+    "name": "anahkiasen/versioner",
     "description": "PHP project.",
     "keywords": [],
     "license": "MIT",
@@ -24,12 +24,12 @@
     },
     "autoload": {
         "psr-4": {
-            "ComposerVersioner\\": "src"
+            "Versioner\\": "src"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "ComposerVersioner\\": "tests"
+            "Versioner\\": "tests"
         }
     },
     "minimum-stability": "stable",

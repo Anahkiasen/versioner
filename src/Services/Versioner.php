@@ -1,16 +1,15 @@
 <?php
 
 /*
- * This file is part of anahkiasen/composer-versioner
+ * This file is part of anahkiasen/versioner
  *
  * (c) madewithlove <heroes@madewithlove.be>
  *
  * For the full copyright and license information, please view the LICENSE
  */
 
-namespace ComposerVersioner\Services;
+namespace Versioner\Services;
 
-use ComposerVersioner\Changelog;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\ProcessHelper;
@@ -20,6 +19,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\Question;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\ProcessBuilder;
+use Versioner\Changelog;
 
 class Versioner
 {
@@ -71,7 +71,7 @@ class Versioner
         $this->updateCodebase();
         $this->pushTags();
 
-        $this->output->success('Version '.$this->version. ' created');
+        $this->output->success('Version '.$this->version.' created');
     }
 
     /**
@@ -99,6 +99,12 @@ class Versioner
             'changes' => $changes,
         ]);
 
+        $preview = $changelog->toMarkdown();
+        $this->output->note($preview);
+        if (!$this->output->confirm('This is your new CHANGELOG.md, all good?')) {
+            return;
+        }
+
         $changelog->save();
 
         return $changelog;
@@ -121,10 +127,10 @@ class Versioner
         }
 
         $commands = [
-            'git commit -m "Create version '.$this->version.'"',
-            'git tag '.$this->version,
-            'git push',
-            'git push --tags',
+            ['git', 'commit', '-m "Create version '.$this->version.'"'],
+            ['git', 'tag', $this->version],
+            ['git', 'push'],
+            ['git', 'push', '--tags'],
         ];
 
         $helper = new ProcessHelper();

@@ -1,6 +1,6 @@
 #!/usr/bin/env php
 <?php
-use ComposerVersioner\Console;
+use Versioner\Console;
 
 require __DIR__.'/../vendor/autoload.php';
 

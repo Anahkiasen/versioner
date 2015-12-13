@@ -1,21 +1,21 @@
 <?php
 
 /*
- * This file is part of anahkiasen/composer-versioner
+ * This file is part of anahkiasen/versioner
  *
  * (c) madewithlove <heroes@madewithlove.be>
  *
  * For the full copyright and license information, please view the LICENSE
  */
 
-namespace ComposerVersioner\Commands;
+namespace Versioner\Commands;
 
-use ComposerVersioner\Services\Versioner;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Versioner\Services\Versioner;
 
 /**
  * @codeCoverageIgnore

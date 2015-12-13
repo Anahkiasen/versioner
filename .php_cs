@@ -4,7 +4,7 @@ use Symfony\CS\Finder\DefaultFinder;
 
 $finder = DefaultFinder::create()->in(['bin', 'src', 'tests']);
 $header = <<<EOF
-This file is part of anahkiasen/composer-versioner
+This file is part of anahkiasen/versioner
 
 (c) madewithlove <heroes@madewithlove.be>
 

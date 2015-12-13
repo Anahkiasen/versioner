@@ -1,17 +1,17 @@
 <?php
 
 /*
- * This file is part of anahkiasen/composer-versioner
+ * This file is part of anahkiasen/versioner
  *
  * (c) madewithlove <heroes@madewithlove.be>
  *
  * For the full copyright and license information, please view the LICENSE
  */
 
-namespace ComposerVersioner;
+namespace Versioner;
 
 use Changelog\Parser;
-use ComposerVersioner\Services\ChangelogConverter;
+use Versioner\Services\ChangelogConverter;
 
 /**
  * An object representation of a CHANGELOG.
@@ -55,7 +55,7 @@ class Changelog extends Parser
     public function getDescription()
     {
         $description = parent::getDescription();
-        if (strpos($description, '## ') !== false) {
+        if (preg_match('/\d\.\d\.\d/', $description)) {
             return;
         }
 
@@ -83,6 +83,17 @@ class Changelog extends Parser
     }
 
     /**
+     * @return string
+     */
+    public function toMarkdown()
+    {
+        $converter = new ChangelogConverter($this->releases, $this->getDescription());
+        $markdown = $converter->getMarkdown();
+
+        return $markdown;
+    }
+
+    /**
      * Save the new contents of the CHANGELOG
      * to the file.
      *
@@ -90,9 +101,6 @@ class Changelog extends Parser
      */
     public function save()
     {
-        $converter = new ChangelogConverter($this->releases, $this->getDescription());
-        $markdown = $converter->getMarkdown();
-
-        file_put_contents($this->file, $markdown);
+        file_put_contents($this->file, $this->toMarkdown());
     }
 }

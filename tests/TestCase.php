@@ -1,14 +1,14 @@
 <?php
 
 /*
- * This file is part of anahkiasen/composer-versioner
+ * This file is part of anahkiasen/versioner
  *
  * (c) madewithlove <heroes@madewithlove.be>
  *
  * For the full copyright and license information, please view the LICENSE
  */
 
-namespace ComposerVersioner;
+namespace Versioner;
 
 use PHPUnit_Framework_TestCase;
 
