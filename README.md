@@ -14,6 +14,8 @@ $ composer global require anahkiasen/composer-versioner
 $ composer-versioner create 1.2.3
 ```
 
+![](http://i.imgur.com/uOLWRUG.gif)
+
 ## Changelog
 
 Please see [CHANGELOG](CHANGELOG.md) for more information.
