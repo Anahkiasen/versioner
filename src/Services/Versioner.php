@@ -158,7 +158,7 @@ class Versioner
     protected function parseChangelog($changelogPath)
     {
         // Get all versions from CHANGELOG
-        if (!file_exists($changelogPath) && !$this->output->ask('No CHANGELOG.md exists, create it?')) {
+        if (!file_exists($changelogPath) && !$this->output->confirm('No CHANGELOG.md exists, create it?')) {
             file_put_contents($changelogPath, '# CHANGELOG'.PHP_EOL.'This is your CHANGELOG');
         }
 
@@ -226,12 +226,14 @@ class Versioner
             'debug_formatter' => new DebugFormatterHelper(),
         ]));
 
-        $currentVerbosity = $this->output->getVerbosity();
-
+        // Compute new verbosity
+        $previousVerbosity = $this->output->getVerbosity();
         $verbosity = $showOutput ? OutputInterface::VERBOSITY_DEBUG : OutputInterface::VERBOSITY_QUIET;
+
+        // Execute command with defined verbosity
         $this->output->setVerbosity($verbosity);
         $process = $helper->run($this->output, $command);
-        $this->output->setVerbosity($currentVerbosity);
+        $this->output->setVerbosity($previousVerbosity);
 
         return $process->getOutput();
     }
