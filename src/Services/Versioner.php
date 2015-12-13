@@ -10,6 +10,7 @@
 
 namespace Versioner\Services;
 
+use League\CommonMark\CommonMarkConverter;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Helper\HelperSet;
 use Symfony\Component\Console\Helper\ProcessHelper;
@@ -194,6 +195,8 @@ class Versioner
      */
     protected function gatherChanges(Changelog $changelog)
     {
+        $converter = new CommonMarkConverter();
+
         $changes = [];
         foreach ($changelog->getSections() as $section) {
             $sectionChanges = [];
@@ -210,7 +213,7 @@ class Versioner
                     break;
                 }
 
-                $sectionChanges[] = $change;
+                $sectionChanges[] = $converter->convertToHtml($change);
             }
 
             if ($sectionChanges) {
