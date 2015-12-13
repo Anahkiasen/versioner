@@ -12,6 +12,7 @@ namespace Versioner\Services;
 
 use Mockery;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Versioner\Changelog;
 use Versioner\TestCase;
 
 class VersionerTest extends TestCase
@@ -19,6 +20,7 @@ class VersionerTest extends TestCase
     public function testCanUpdateChangelog()
     {
         $count = 0;
+        $changelogPath = __DIR__.'/CHANGELOG.md';
 
         $output = Mockery::mock(SymfonyStyle::class);
         $output->shouldReceive('ask')->andReturn(false);
@@ -31,13 +33,13 @@ class VersionerTest extends TestCase
         });
         $output->shouldIgnoreMissing();
 
-        $versioner = new Versioner(__DIR__, '1.0.0', $output);
-        $versioner->createVersion();
+        file_put_contents($changelogPath, '# CHANGELOG');
+        $versioner = new Versioner(new Changelog($changelogPath));
+        $versioner->setOutput($output);
+        $versioner->createVersion('1.0.0');
 
         $expected = <<<'MARKDOWN'
 # CHANGELOG
-
-This is your CHANGELOG
 
 ## 1.0.0 - {date}
 
@@ -51,6 +53,6 @@ This is your CHANGELOG
 MARKDOWN;
 
         $expected = str_replace('{date}', date('Y-m-d'), $expected);
-        $this->assertEquals($expected, file_get_contents(__DIR__.'/CHANGELOG.md'));
+        $this->assertEquals($expected, file_get_contents($changelogPath));
     }
 }

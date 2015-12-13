@@ -11,6 +11,7 @@
 namespace Versioner;
 
 use Changelog\Parser;
+use InvalidArgumentException;
 use Versioner\Services\ChangelogConverter;
 
 /**
@@ -54,8 +55,12 @@ class Changelog extends Parser
      */
     public function getDescription()
     {
-        $description = parent::getDescription();
-        if ($this->releases && strpos($description, $this->releases[0]['name']) !== false) {
+        try {
+            $description = parent::getDescription();
+            if ($this->releases && strpos($description, $this->releases[0]['name']) !== false) {
+                return;
+            }
+        } catch (InvalidArgumentException $exception) {
             return;
         }
 
