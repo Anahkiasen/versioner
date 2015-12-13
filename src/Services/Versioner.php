@@ -228,9 +228,9 @@ class Versioner
 
         $currentVerbosity = $this->output->getVerbosity();
 
-        $verbosity = $showOutput ? OutputInterface::VERBOSITY_QUIET : OutputInterface::VERBOSITY_DEBUG;
+        $verbosity = $showOutput ? OutputInterface::VERBOSITY_DEBUG : OutputInterface::VERBOSITY_QUIET;
         $this->output->setVerbosity($verbosity);
-        $process = $helper->run($this->output, $command, null, null, $verbosity);
+        $process = $helper->run($this->output, $command);
         $this->output->setVerbosity($currentVerbosity);
 
         return $process->getOutput();
