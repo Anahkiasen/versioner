@@ -83,6 +83,14 @@ class Changelog extends Parser
     }
 
     /**
+     * @return array
+     */
+    public function getLastRelease()
+    {
+        return head($this->releases);
+    }
+
+    /**
      * @return string
      */
     public function toMarkdown()

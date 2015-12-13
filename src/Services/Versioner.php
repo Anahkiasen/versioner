@@ -87,7 +87,17 @@ class Versioner
             return;
         }
 
+        // Summarize commits
+        $last = $changelog->getLastRelease();
+        if ($last) {
+            $commits = $this->execute(['git', 'log', $last['name'].'..HEAD', '--oneline']);
+            $commits = explode(PHP_EOL, trim($commits));
+            $this->output->writeln('Commits since <comment>'.$last['name'].'</comment>:');
+            $this->output->listing($commits);
+        }
+
         // Add changes
+        $this->output->section('Gathering changes for <comment>'.$this->version.'</comment>');
         $changes = $this->gatherChanges($changelog);
         if (!$changes) {
             return $this->output->error('No changes to create version with');
@@ -126,14 +136,8 @@ class Versioner
             ['git', 'push', '--tags'],
         ];
 
-        $helper = new ProcessHelper();
-        $helper->setHelperSet(new HelperSet([
-            'debug_formatter' => new DebugFormatterHelper(),
-        ]));
-
         foreach ($commands as $command) {
-            $process = ProcessBuilder::create($command)->getProcess();
-            $helper->run($this->output, $process);
+            $this->execute($command);
         }
     }
 
@@ -168,7 +172,7 @@ class Versioner
             $sectionChanges = [];
 
             // Prepare question
-            $question = new Question('Add something to "'.ucfirst($section).'"?');
+            $question = new Question('Add something to "'.ucfirst($section).'"');
             $question->setValidator(function ($value) {
                 return $value ?: 'NOPE';
             });
@@ -188,5 +192,21 @@ class Versioner
         }
 
         return $changes;
+    }
+
+    /**
+     * @param string $command
+     */
+    protected function execute($command)
+    {
+        $helper = new ProcessHelper();
+        $helper->setHelperSet(new HelperSet([
+            'debug_formatter' => new DebugFormatterHelper(),
+        ]));
+
+        $process = ProcessBuilder::create($command)->getProcess();
+        $helper->run($this->output, $process);
+
+        return $process->getOutput();
     }
 }
