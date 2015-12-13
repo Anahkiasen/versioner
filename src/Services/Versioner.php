@@ -158,8 +158,12 @@ class Versioner
     protected function parseChangelog($changelogPath)
     {
         // Get all versions from CHANGELOG
-        if (!file_exists($changelogPath) && !$this->output->confirm('No CHANGELOG.md exists, create it?')) {
-            file_put_contents($changelogPath, '# CHANGELOG'.PHP_EOL.'This is your CHANGELOG');
+        if (!file_exists($changelogPath) && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
+            $stub = '# CHANGELOG';
+            $stub .= PHP_EOL;
+            $stub .= 'This project follows the [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) spec.';
+
+            file_put_contents($changelogPath, $stub);
         }
 
         return new Changelog($changelogPath);
