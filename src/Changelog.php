@@ -67,6 +67,10 @@ class Changelog extends Parser
         return $description;
     }
 
+    //////////////////////////////////////////////////////////////////////
+    ////////////////////////////// RELEASES //////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
     /**
      * @param string $expected
      *
@@ -74,8 +78,30 @@ class Changelog extends Parser
      */
     public function hasRelease($expected)
     {
-        return (bool) array_filter($this->releases, function ($release) use ($expected) {
+        return (bool) $this->getRelease($expected);
+    }
+
+    /**
+     * Get a release in particular.
+     *
+     * @param string $expected
+     *
+     * @return array
+     */
+    public function getRelease($expected)
+    {
+        return array_first($this->releases, function ($key, $release) use ($expected) {
             return $release['name'] === $expected;
+        });
+    }
+
+    /**
+     * @param string $expected
+     */
+    public function removeRelease($expected)
+    {
+        $this->releases = array_filter($this->releases, function ($release) use ($expected) {
+           return $release['name'] !== $expected;
         });
     }
 
@@ -94,6 +120,10 @@ class Changelog extends Parser
     {
         return head($this->releases);
     }
+
+    //////////////////////////////////////////////////////////////////////
+    /////////////////////////////// OUTPUT ///////////////////////////////
+    //////////////////////////////////////////////////////////////////////
 
     /**
      * @return string

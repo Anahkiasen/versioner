@@ -14,6 +14,11 @@ use PHPUnit_Framework_TestCase;
 
 abstract class TestCase extends PHPUnit_Framework_TestCase
 {
+    /**
+     * @var string
+     */
+    protected $changelogPath = __DIR__.'/CHANGELOG.md';
+
     public function setUp()
     {
         $this->purgeStub();
@@ -26,9 +31,8 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
 
     protected function purgeStub()
     {
-        $changelog = __DIR__.'/Services/CHANGELOG.md';
-        if (file_exists($changelog)) {
-            unlink($changelog);
+        if (file_exists($this->changelogPath)) {
+            unlink($this->changelogPath);
         }
     }
 }

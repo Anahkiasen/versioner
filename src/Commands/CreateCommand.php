@@ -11,6 +11,7 @@
 namespace Versioner\Commands;
 
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
 use Versioner\Services\Versioner;
 
 /**
@@ -30,7 +31,8 @@ class CreateCommand extends AbstractCommand
     {
         $this->setName('create')
              ->setDescription('Create a new version of the package')
-             ->addArgument('version', InputArgument::REQUIRED, 'The version to create');
+             ->addArgument('version', InputArgument::REQUIRED, 'The version to create')
+             ->addOption('from', null, InputOption::VALUE_REQUIRED, 'The version to create the new one from');
     }
 
     /**

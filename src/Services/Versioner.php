@@ -55,6 +55,11 @@ class Versioner
     protected $version;
 
     /**
+     * @var string
+     */
+    protected $from;
+
+    /**
      * Versioner constructor.
      *
      * @param Changelog            $changelog
@@ -77,6 +82,14 @@ class Versioner
     public function setOutput(OutputInterface $output)
     {
         $this->output = $output;
+    }
+
+    /**
+     * @param string $from
+     */
+    public function setFrom($from)
+    {
+        $this->from = $from;
     }
 
     //////////////////////////////////////////////////////////////////////
@@ -150,13 +163,19 @@ class Versioner
         }
 
         // Summarize commits
-        $this->summarizeCommits($this->changelog);
+        $this->summarizeCommits();
 
         // Gather changes for new version
         $this->output->section('Gathering changes for <comment>'.$this->version.'</comment>');
-        $changes = $this->gatherChanges($this->changelog);
+        $changes = $this->gatherChanges();
         if (!$changes) {
             return $this->output->error('No changes to create version with');
+        }
+
+        if ($this->from) {
+            $from = $this->changelog->getRelease($this->from);
+            $this->changelog->removeRelease($this->from);
+            $changes = array_merge_recursive($from['changes'], $changes);
         }
 
         // Add to changelog

@@ -21,6 +21,7 @@ Use the `create` command to create a new version:
 
 ```bash
 $ versioner create 1.2.3
+$ versioner create 1.2.3 --from="Unreleased"
 ```
 
 Or use the `increment` command (default is patch):
