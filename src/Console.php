@@ -29,7 +29,7 @@ class Console extends Application
      */
     public function __construct()
     {
-        parent::__construct('Composer Versioner', self::VERSION);
+        parent::__construct('Versioner', self::VERSION);
 
         $this->add(new CreateCommand());
         $this->add(new IncrementCommand());

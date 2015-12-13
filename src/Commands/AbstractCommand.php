@@ -33,8 +33,14 @@ abstract class AbstractCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->input = $input;
+        $this->input  = $input;
         $this->output = new SymfonyStyle($input, $output);
+
+        if (!$this->isInRepository()) {
+            $this->output->error('Versioner needs to run in a folder with Git');
+
+            return 1;
+        }
 
         $this->fire();
     }
@@ -45,19 +51,24 @@ abstract class AbstractCommand extends Command
     abstract protected function fire();
 
     /**
+     * @return bool
+     */
+    protected function isInRepository()
+    {
+        return is_dir(getcwd().DIRECTORY_SEPARATOR.'.git');
+    }
+
+    /**
      * @return Changelog
      */
     protected function getChangelog()
     {
         $changelogPath = getcwd().DIRECTORY_SEPARATOR.'CHANGELOG.md';
-        $changelog = new Changelog($changelogPath);
         if (!file_exists($changelogPath) && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
             $stub = file_get_contents(__DIR__.'/../../stubs/CHANGELOG.md');
             file_put_contents($changelogPath, $stub);
-
-            return $changelog;
         }
 
-        return $changelog;
+        return new Changelog($changelogPath);
     }
 }
