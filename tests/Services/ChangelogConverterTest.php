@@ -86,4 +86,34 @@ MARKDOWN;
 
         $this->assertEquals($expected, $markdown);
     }
+
+    public function testDoesntLeaveSpaceForDescriptionIfNone()
+    {
+        $changelog = [
+            [
+                'name' => '0.1.0',
+                'date' => '2015-01-01',
+                'changes' => [
+                    'added' => [
+                        'Initial <code>release</code>',
+                    ],
+                ],
+            ],
+        ];
+
+        $converter = new ChangelogConverter($changelog);
+        $markdown = $converter->getMarkdown();
+
+        $expected = <<<'MARKDOWN'
+# CHANGELOG
+
+## 0.1.0 - 2015-01-01
+
+### Added
+
+- Initial `release`
+MARKDOWN;
+
+        $this->assertEquals($expected, $markdown);
+    }
 }

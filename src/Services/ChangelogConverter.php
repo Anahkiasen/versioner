@@ -44,8 +44,10 @@ class ChangelogConverter
     {
         $html = '# CHANGELOG';
 
-        $html .= PHP_EOL.PHP_EOL;
-        $html .= (new HtmlConverter())->convert($this->description);
+        if ($this->description) {
+            $html .= PHP_EOL.PHP_EOL;
+            $html .= (new HtmlConverter())->convert($this->description);
+        }
 
         foreach ($this->releases as $release) {
             if (!array_key_exists('changes', $release)) {
