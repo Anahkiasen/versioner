@@ -178,7 +178,8 @@ class Versioner
         if (!file_exists($changelogPath) && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
             $stub = '# CHANGELOG';
             $stub .= PHP_EOL.PHP_EOL;
-            $stub .= 'This project follows the [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0.html) spec.';
+            $stub .= 'All notable changes to this project will be documented in this file.'.PHP_EOL;
+            $stub .= 'This project adheres to [Semantic Versioning](http://semver.org/).';
 
             file_put_contents($changelogPath, $stub);
         }
