@@ -15,6 +15,8 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Versioner\Changelog;
+use Versioner\Scm\Git;
+use Versioner\Services\Environment;
 
 abstract class AbstractCommand extends Command
 {
@@ -29,14 +31,20 @@ abstract class AbstractCommand extends Command
     protected $output;
 
     /**
+     * @var Environment
+     */
+    protected $environment;
+
+    /**
      * {@inheritdoc}
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->input  = $input;
+        $this->input = $input;
         $this->output = new SymfonyStyle($input, $output);
+        $this->environment = new Environment(getcwd(), new Git());
 
-        if (!$this->isInRepository()) {
+        if (!$this->environment->isInRepository()) {
             $this->output->error('Versioner needs to run in a folder with Git');
 
             return 1;
@@ -51,24 +59,15 @@ abstract class AbstractCommand extends Command
     abstract protected function fire();
 
     /**
-     * @return bool
-     */
-    protected function isInRepository()
-    {
-        return is_dir(getcwd().DIRECTORY_SEPARATOR.'.git');
-    }
-
-    /**
      * @return Changelog
      */
     protected function getChangelog()
     {
-        $changelogPath = getcwd().DIRECTORY_SEPARATOR.'CHANGELOG.md';
-        if (!file_exists($changelogPath) && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
+        if (!$this->environment->hasChangelog() && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
             $stub = file_get_contents(__DIR__.'/../../stubs/CHANGELOG.md');
-            file_put_contents($changelogPath, $stub);
+            file_put_contents($this->environment->getChangelogPath(), $stub);
         }
 
-        return new Changelog($changelogPath);
+        return new Changelog($this->environment->getChangelogPath());
     }
 }

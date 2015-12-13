@@ -39,7 +39,9 @@
             "dev-master": "1.0-dev"
         }
     },
-    "bin": ["bin/versioner"],
+    "bin": [
+        "bin/versioner"
+    ],
     "minimum-stability": "stable",
     "scripts": {
         "test": "phpunit",

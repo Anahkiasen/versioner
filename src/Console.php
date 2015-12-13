@@ -34,4 +34,9 @@ class Console extends Application
         $this->add(new CreateCommand());
         $this->add(new IncrementCommand());
     }
+
+    protected function detectScm()
+    {
+        $folder = getcwd();
+    }
 }
