@@ -10,6 +10,7 @@
 
 namespace Versioner\Services;
 
+use Herrera\Version\Builder;
 use League\CommonMark\CommonMarkConverter;
 use Symfony\Component\Console\Helper\DebugFormatterHelper;
 use Symfony\Component\Console\Helper\HelperSet;
@@ -26,12 +27,22 @@ class Versioner
     /**
      * @var string
      */
-    protected $rootPath;
+    const MAJOR = 'major';
 
     /**
      * @var string
      */
-    protected $version;
+    const MINOR = 'minor';
+
+    /**
+     * @var string
+     */
+    const PATCH = 'patch';
+
+    /**
+     * @var Changelog
+     */
+    private $changelog;
 
     /**
      * @var SymfonyStyle
@@ -39,16 +50,19 @@ class Versioner
     protected $output;
 
     /**
+     * @var string
+     */
+    protected $version;
+
+    /**
      * Versioner constructor.
      *
-     * @param string               $rootPath
-     * @param string               $version
+     * @param Changelog            $changelog
      * @param OutputInterface|null $output
      */
-    public function __construct($rootPath, $version, OutputInterface $output = null)
+    public function __construct(Changelog $changelog, OutputInterface $output = null)
     {
-        $this->rootPath = $rootPath;
-        $this->version = $version;
+        $this->changelog = $changelog;
         $this->output = $output ?: new NullOutput();
 
         // Wrap in SymfonyStyle
@@ -58,10 +72,25 @@ class Versioner
     }
 
     /**
-     * Create the package version.
+     * @param OutputInterface $output
      */
-    public function createVersion()
+    public function setOutput(OutputInterface $output)
     {
+        $this->output = $output;
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    ////////////////////////// CREATING VERSIONS /////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+    /**
+     * Create the package version.
+     *
+     * @param string $version
+     */
+    public function createVersion($version)
+    {
+        $this->version = $version;
         $this->output->title('Creating version '.$this->version);
 
         $steps = ['updateChangelog', 'pushTags'];
@@ -75,57 +104,87 @@ class Versioner
     }
 
     /**
+     * Increment the package version.
+     *
+     * @param string $increment
+     */
+    public function incrementVersion($increment)
+    {
+        $last = $this->changelog->getLastRelease();
+        $version = Builder::create()->importString($last['name']);
+        switch ($increment) {
+            case self::MAJOR:
+                $version->incrementMajor();
+                break;
+
+            case self::MINOR:
+                $version->incrementMinor();
+                break;
+
+            default:
+                $version->incrementPatch();
+                break;
+        }
+
+        $version = (string) $version->getVersion();
+        if (!$this->output->confirm('This will create <comment>'.$version.'</comment>, correct?')) {
+            return;
+        }
+
+        $this->createVersion($version);
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    //////////////////////////// UPDATE CYCLE ////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+    /**
      * @return Changelog
      */
     protected function updateChangelog()
     {
-        $changelogPath = $this->rootPath.'/CHANGELOG.md';
-
         // If the release already exists and we don't want to overwrite it, cancel
-        $changelog = $this->parseChangelog($changelogPath);
         $question = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
-        if ($changelog->hasRelease($this->version) && !$this->output->confirm($question, false)) {
+        if ($this->changelog->hasRelease($this->version) && !$this->output->confirm($question, false)) {
             return;
         }
 
         // Summarize commits
-        $this->summarizeCommits($changelog);
+        $this->summarizeCommits($this->changelog);
 
         // Gather changes for new version
         $this->output->section('Gathering changes for <comment>'.$this->version.'</comment>');
-        $changes = $this->gatherChanges($changelog);
+        $changes = $this->gatherChanges($this->changelog);
         if (!$changes) {
             return $this->output->error('No changes to create version with');
         }
 
         // Add to changelog
-        $changelog->addRelease([
+        $this->changelog->addRelease([
             'name' => $this->version,
             'date' => date('Y-m-d'),
             'changes' => $changes,
         ]);
 
         // Show to user and confirm
-        $preview = $changelog->toMarkdown();
+        $preview = $this->changelog->toMarkdown();
         $this->output->note($preview);
         if (!$this->output->confirm('This is your new CHANGELOG.md, all good?')) {
             return;
         }
 
         // Write out to CHANGELOG.md
-        $changelog->save();
+        $this->changelog->save();
 
-        return $changelog;
+        return $this->changelog;
     }
 
     /**
      * Summarize changes since last tag.
-     *
-     * @param Changelog $changelog
      */
-    protected function summarizeCommits(Changelog $changelog)
+    protected function summarizeCommits()
     {
-        $last = $changelog->getLastRelease();
+        $last = $this->changelog->getLastRelease();
         if (!$last) {
             return;
         }
@@ -166,40 +225,16 @@ class Versioner
     //////////////////////////////////////////////////////////////////////
 
     /**
-     * Parse a CHANGELOG.md into an object.
-     *
-     * @param string $changelogPath
-     *
-     * @return Changelog
-     */
-    protected function parseChangelog($changelogPath)
-    {
-        // Get all versions from CHANGELOG
-        if (!file_exists($changelogPath) && $this->output->confirm('No CHANGELOG.md exists, create it?')) {
-            $stub = '# CHANGELOG';
-            $stub .= PHP_EOL.PHP_EOL;
-            $stub .= 'All notable changes to this project will be documented in this file.'.PHP_EOL;
-            $stub .= 'This project adheres to [Semantic Versioning](http://semver.org/).';
-
-            file_put_contents($changelogPath, $stub);
-        }
-
-        return new Changelog($changelogPath);
-    }
-
-    /**
      * Gather changes for the new version.
-     *
-     * @param Changelog $changelog
      *
      * @return array
      */
-    protected function gatherChanges(Changelog $changelog)
+    protected function gatherChanges()
     {
         $converter = new CommonMarkConverter();
 
         $changes = [];
-        foreach ($changelog->getSections() as $section) {
+        foreach ($this->changelog->getSections() as $section) {
             $sectionChanges = [];
 
             // Prepare question

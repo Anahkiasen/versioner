@@ -10,28 +10,14 @@
 
 namespace Versioner\Commands;
 
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Style\SymfonyStyle;
 use Versioner\Services\Versioner;
 
 /**
  * @codeCoverageIgnore
  */
-class CreateVersionCommand extends Command
+class CreateCommand extends AbstractCommand
 {
-    /**
-     * @var InputInterface
-     */
-    protected $input;
-
-    /**
-     * @var SymfonyStyle
-     */
-    protected $output;
-
     /**
      * @var string
      */
@@ -50,13 +36,10 @@ class CreateVersionCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function fire()
     {
-        $rootPath = getcwd();
-        $version = $input->getArgument('version');
-        $output = new SymfonyStyle($input, $output);
-
-        $versioner = new Versioner($rootPath, $version, $output);
-        $versioner->createVersion();
+        $versioner = new Versioner($this->getChangelog());
+        $versioner->setOutput($this->output);
+        $versioner->createVersion($this->input->getArgument('version'));
     }
 }

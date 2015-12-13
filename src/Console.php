@@ -11,7 +11,8 @@
 namespace Versioner;
 
 use Symfony\Component\Console\Application;
-use Versioner\Commands\CreateVersionCommand;
+use Versioner\Commands\CreateCommand;
+use Versioner\Commands\IncrementCommand;
 
 /**
  * @codeCoverageIgnore
@@ -30,6 +31,7 @@ class Console extends Application
     {
         parent::__construct('Composer Versioner', self::VERSION);
 
-        $this->add(new CreateVersionCommand());
+        $this->add(new CreateCommand());
+        $this->add(new IncrementCommand());
     }
 }
