@@ -226,8 +226,12 @@ class Versioner
             'debug_formatter' => new DebugFormatterHelper(),
         ]));
 
+        $currentVerbosity = $this->output->getVerbosity();
+
         $verbosity = $showOutput ? OutputInterface::VERBOSITY_QUIET : OutputInterface::VERBOSITY_DEBUG;
+        $this->output->setVerbosity($verbosity);
         $process = $helper->run($this->output, $command, null, null, $verbosity);
+        $this->output->setVerbosity($currentVerbosity);
 
         return $process->getOutput();
     }
