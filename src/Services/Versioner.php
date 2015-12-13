@@ -108,7 +108,7 @@ class Versioner
 
         $steps = ['updateChangelog', 'pushTags'];
         foreach ($steps as $step) {
-            if (!$this->$step()) {
+            if ($this->$step() === false) {
                 return;
             }
         }
@@ -124,7 +124,9 @@ class Versioner
     public function incrementVersion($increment)
     {
         $last = $this->changelog->getLastRelease();
-        $version = Builder::create()->importString($last['name']);
+        $last = $last ? $last['name'] : '0.0.0';
+
+        $version = Builder::create()->importString($last);
         switch ($increment) {
             case self::MAJOR:
                 $version->incrementMajor();
@@ -159,7 +161,7 @@ class Versioner
         // If the release already exists and we don't want to overwrite it, cancel
         $question = 'Version <comment>'.$this->version.'</comment> already exists, create anyway?';
         if ($this->changelog->hasRelease($this->version) && !$this->output->confirm($question, false)) {
-            return;
+            return false;
         }
 
         // Summarize commits
@@ -169,7 +171,9 @@ class Versioner
         $this->output->section('Gathering changes for <comment>'.$this->version.'</comment>');
         $changes = $this->gatherChanges();
         if (!$changes) {
-            return $this->output->error('No changes to create version with');
+            $this->output->error('No changes to create version with');
+
+            return false;
         }
 
         if ($this->from) {
@@ -189,7 +193,7 @@ class Versioner
         $preview = $this->changelog->toMarkdown();
         $this->output->note($preview);
         if (!$this->output->confirm('This is your new CHANGELOG.md, all good?')) {
-            return;
+            return false;
         }
 
         // Write out to CHANGELOG.md
@@ -223,7 +227,7 @@ class Versioner
     protected function pushTags()
     {
         if (!$this->output->confirm('Tag and push to remote?')) {
-            return;
+            return false;
         }
 
         $commands = [

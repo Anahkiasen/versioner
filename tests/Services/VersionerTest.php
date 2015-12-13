@@ -19,14 +19,11 @@ class VersionerTest extends TestCase
 {
     public function testCanUpdateChangelog()
     {
-        $output = $this->getMockOutput();
-
-        file_put_contents($this->changelogPath, '# CHANGELOG');
-        $versioner = new Versioner(new Changelog($this->changelogPath));
+        $versioner = new Versioner($this->mockChangelog());
         $versioner->setOutput($this->getMockOutput());
         $versioner->createVersion('1.0.0');
 
-        $expected = <<<'MARKDOWN'
+        $this->assertChangelogEquals(<<<'MARKDOWN'
 # CHANGELOG
 
 ## 1.0.0 - {date}
@@ -38,10 +35,8 @@ class VersionerTest extends TestCase
 ### Changed
 
 - foobar
-MARKDOWN;
-
-        $expected = str_replace('{date}', date('Y-m-d'), $expected);
-        $this->assertEquals($expected, file_get_contents($this->changelogPath));
+MARKDOWN
+);
     }
 
     public function testCanCreateReleaseFromExistingOne()
@@ -60,13 +55,12 @@ Description
 - fixed
 MARKDOWN;
 
-        file_put_contents($this->changelogPath, $existing);
-        $versioner = new Versioner(new Changelog($this->changelogPath));
+        $versioner = new Versioner($this->mockChangelog($existing));
         $versioner->setOutput($this->getMockOutput());
         $versioner->setFrom('Unreleased');
         $versioner->createVersion('1.0.0');
 
-        $expected = <<<'MARKDOWN'
+        $this->assertChangelogEquals(<<<'MARKDOWN'
 # CHANGELOG
 
 Description
@@ -85,10 +79,30 @@ Description
 ### Changed
 
 - foobar
-MARKDOWN;
+MARKDOWN
+);
+    }
 
-        $expected = str_replace('{date}', date('Y-m-d'), $expected);
-        $this->assertEquals($expected, file_get_contents($this->changelogPath));
+    public function testCanIncrementVersion()
+    {
+        $versioner = new Versioner($this->mockChangelog());
+        $versioner->setOutput($this->getMockOutput());
+        $versioner->incrementVersion(Versioner::MAJOR);
+
+        $this->assertChangelogEquals(<<<'MARKDOWN'
+# CHANGELOG
+
+## 1.0.0 - {date}
+
+### Added
+
+- foobar
+
+### Changed
+
+- foobar
+MARKDOWN
+        );
     }
 
     /**
@@ -100,6 +114,7 @@ MARKDOWN;
         $output = Mockery::mock(SymfonyStyle::class);
         $output->shouldReceive('ask')->andReturn(false);
         $output->shouldReceive('confirm')->with('This is your new CHANGELOG.md, all good?')->andReturn(true);
+        $output->shouldReceive('confirm')->with('This will create <comment>1.0.0</comment>, correct?')->andReturn(true);
         $output->shouldReceive('confirm')->with('Push to remote?')->andReturn(false);
         $output->shouldReceive('askQuestion')->andReturnUsing(function () use (&$count) {
             ++$count;

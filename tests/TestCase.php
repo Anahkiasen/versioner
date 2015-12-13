@@ -19,6 +19,10 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
      */
     protected $changelogPath = __DIR__.'/CHANGELOG.md';
 
+    //////////////////////////////////////////////////////////////////////
+    ////////////////////////////// LIFECYCLE /////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
     public function setUp()
     {
         $this->purgeStub();
@@ -34,5 +38,34 @@ abstract class TestCase extends PHPUnit_Framework_TestCase
         if (file_exists($this->changelogPath)) {
             unlink($this->changelogPath);
         }
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    ///////////////////////////// ASSERTIONS /////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param string $expected
+     */
+    protected function assertChangelogEquals($expected)
+    {
+        $expected = str_replace('{date}', date('Y-m-d'), $expected);
+        $this->assertEquals($expected, file_get_contents($this->changelogPath));
+    }
+
+    //////////////////////////////////////////////////////////////////////
+    /////////////////////////////// MOCKS ////////////////////////////////
+    //////////////////////////////////////////////////////////////////////
+
+    /**
+     * @param string $contents
+     *
+     * @return Changelog
+     */
+    protected function mockChangelog($contents = '# CHANGELOG')
+    {
+        file_put_contents($this->changelogPath, $contents);
+
+        return new Changelog($this->changelogPath);
     }
 }
