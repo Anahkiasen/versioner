@@ -88,13 +88,7 @@ class Versioner
         }
 
         // Summarize commits
-        $last = $changelog->getLastRelease();
-        if ($last) {
-            $commits = $this->executeQuietly(['git', 'log', $last['name'].'..HEAD', '--oneline']);
-            $commits = explode(PHP_EOL, trim($commits));
-            $this->output->writeln('Commits since <comment>'.$last['name'].'</comment>:');
-            $this->output->listing($commits);
-        }
+        $this->summarizeCommits($changelog);
 
         // Gather changes for new version
         $this->output->section('Gathering changes for <comment>'.$this->version.'</comment>');
@@ -121,6 +115,27 @@ class Versioner
         $changelog->save();
 
         return $changelog;
+    }
+
+    /**
+     * Summarize changes since last tag.
+     *
+     * @param Changelog $changelog
+     */
+    protected function summarizeCommits(Changelog $changelog)
+    {
+        $last = $changelog->getLastRelease();
+        if (!$last) {
+            return;
+        }
+
+        $commits = $this->executeQuietly(['git', 'log', $last['name'].'..HEAD', '--oneline']);
+        $commits = explode(PHP_EOL, trim($commits));
+
+        if (!$commits) {
+            $this->output->writeln('Commits since <comment>'.$last['name'].'</comment>:');
+            $this->output->listing($commits);
+        }
     }
 
     /**
