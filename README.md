@@ -5,7 +5,7 @@ A package to more easily version packages.
 ## Installation
 
 ``` bash
-$ composer global require anahkiasen/composer-versioner
+$ composer global require anahkiasen/versioner
 ```
 
 ## Usage
