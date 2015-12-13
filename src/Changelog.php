@@ -139,8 +139,6 @@ class Changelog extends Parser
     /**
      * Save the new contents of the CHANGELOG
      * to the file.
-     *
-     * @return string
      */
     public function save()
     {

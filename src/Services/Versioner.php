@@ -284,11 +284,11 @@ class Versioner
     }
 
     /**
-     * @param string $command
+     * @param array $command
      *
      * @return string
      */
-    protected function executeQuietly($command)
+    protected function executeQuietly(array $command)
     {
         return $this->execute($command, false);
     }
@@ -296,12 +296,12 @@ class Versioner
     /**
      * Execute a bash command.
      *
-     * @param string $command
-     * @param bool   $showOutput
+     * @param array $command
+     * @param bool  $showOutput
      *
      * @return string
      */
-    protected function execute($command, $showOutput = true)
+    protected function execute(array $command, $showOutput = true)
     {
         $helper = new ProcessHelper();
         $helper->setHelperSet(new HelperSet([
