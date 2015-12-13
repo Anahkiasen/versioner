@@ -6,4 +6,8 @@ This project follows the [Semantic Versioning 2.0](http://semver.org/spec/v2.0.0
 
 ### Added
 
-- Initial release
+- Added awesome feature
+
+### Fixed
+
+- Fixed nasty bug
